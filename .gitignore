@@ -2,7 +2,6 @@
 *.class
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -10,3 +9,6 @@
 *.rar
 
 hs_err_pid*
+
+
+/bin/
