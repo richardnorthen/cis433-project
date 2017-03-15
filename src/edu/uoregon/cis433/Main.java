@@ -4,6 +4,10 @@ import java.io.File;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Formatter;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -14,10 +18,10 @@ import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
@@ -42,7 +46,14 @@ public class Main extends Application {
 	private static final String API_URL = "https://westus.api.cognitive.microsoft.com/face/v1.0/";
 
 	private static final String APP_TITLE = "FRAS v1";
+	private static final String APP_DEFAULT_IMAGE = "file:face.jpg";
 	private static final String APP_SELECT_IMG = "Select a face...";
+	private static final double APP_VERIFY_BUTTON_HEIGHT = 36;
+	private static final double APP_VERIFY_BUTTON_WIDTH = 72;
+	private static final double APP_SMALL_BUTTON_HEIGHT = 28;
+	private static final double APP_SMALL_BUTTON_WIDTH = 46;
+	private static final String APP_CAMERA_BUTTON = "CAM";
+	private static final String APP_DIR_BUTTON = "...";
 	private static final String APP_VERIFY_BUTTON = "Verify";
 	private static final String APP_NO_IMG = "Please select an image";
 
@@ -54,12 +65,13 @@ public class Main extends Application {
 
 	private static final double APP_MIN_HEIGHT = 600;
 	private static final double APP_MIN_WIDTH = 800;
-	private static final double APP_IMAGE_SIZE = 350;
+	private static final double APP_IMAGE_SIZE = 250;
 
 	// stage and images
 	Stage stage;
 	File image1File, image2File;
 	Label image1Label, image2Label, resultLabel;
+	TextArea outputTextArea;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -81,49 +93,75 @@ public class Main extends Application {
 		Scene scene = new Scene(layout);
 
 		// gui objects
+		Button image1CameraButton = new Button(),
+				image2CameraButton = new Button(),
+				image1DirButton = new Button(),
+				image2DirButton = new Button(),
+				verifyButton = new Button();
 		TextField image1Path = new TextField(),
 				image2Path = new TextField();
 		ImageView image1View = new ImageView(),
 				image2View = new ImageView();
+		outputTextArea = new TextArea();
 		image1Label = new Label();
 		image2Label = new Label();
 		resultLabel = new Label();
-		Button verifyButton = new Button();
 
 		// object properties
-		image1Path.setText(APP_SELECT_IMG);
+		image1CameraButton.setText(APP_CAMERA_BUTTON);
+		image1CameraButton.setPrefSize(APP_SMALL_BUTTON_WIDTH, APP_SMALL_BUTTON_HEIGHT);
+		image1CameraButton.setOnAction(event -> {
+			// TODO take webcam picture
+		});
+		GridPane.setConstraints(image1CameraButton, 0, 0);
+
 		image1Path.setEditable(false);
-		image1Path.setOnMouseClicked(event -> {
-			image1File = getImageFile();
-			if (image1File != null) {
+		GridPane.setConstraints(image1Path, 1, 0, 1, 1, HPos.CENTER, VPos.CENTER, Priority.ALWAYS, Priority.NEVER);
+
+		image1DirButton.setText(APP_DIR_BUTTON);
+		image1DirButton.setPrefSize(APP_SMALL_BUTTON_WIDTH, APP_SMALL_BUTTON_HEIGHT);
+		image1DirButton.setOnAction(event -> {
+			File selectedFile = getImageFile();
+			if (selectedFile != null) {
+				image1File = selectedFile;
 				updateImageObjects(image1File, image1Path, image1View);
 			}
 		});
-		GridPane.setConstraints(image1Path, 0, 0, 1, 1, HPos.CENTER, VPos.BOTTOM);
+		GridPane.setConstraints(image1DirButton, 2, 0);
 
-		GridPane.setConstraints(image1View, 0, 1, 1, 1, HPos.CENTER, VPos.TOP);
-
-		resultLabel.setFont(new Font(18));
-		image1Label.setStyle("-fx-background-color: #FFFFFF");
-		GridPane.setConstraints(image1Label, 0, 2, 1, 1, HPos.CENTER, VPos.TOP, Priority.ALWAYS, Priority.ALWAYS);
+		image1View.setImage(new Image(APP_DEFAULT_IMAGE, APP_IMAGE_SIZE, APP_IMAGE_SIZE, true, true, false));
+		GridPane.setConstraints(image1View, 0, 1, 3, 1, HPos.CENTER, VPos.TOP, Priority.NEVER, Priority.ALWAYS);
 		
-		image2Path.setText(APP_SELECT_IMG);
+		GridPane.setConstraints(image1Label, 0, 2, 3, 1);
+		
+		image2CameraButton.setText(APP_CAMERA_BUTTON);
+		image2CameraButton.setPrefSize(APP_SMALL_BUTTON_WIDTH, APP_SMALL_BUTTON_HEIGHT);
+		image2CameraButton.setOnAction(event -> {
+			// TODO take webcam picture
+		});
+		GridPane.setConstraints(image2CameraButton, 3, 0);
+
 		image2Path.setEditable(false);
-		image2Path.setOnMouseClicked(event -> {
-			image2File = getImageFile();
-			if (image2File != null) {
+		GridPane.setConstraints(image2Path, 4, 0, 1, 1, HPos.CENTER, VPos.CENTER, Priority.ALWAYS, Priority.NEVER);
+
+		image2DirButton.setText(APP_DIR_BUTTON);
+		image2DirButton.setPrefSize(APP_SMALL_BUTTON_WIDTH, APP_SMALL_BUTTON_HEIGHT);
+		image2DirButton.setOnAction(event -> {
+			File selectedFile = getImageFile();
+			if (selectedFile != null) {
+				image2File = selectedFile;
 				updateImageObjects(image2File, image2Path, image2View);
 			}
 		});
-		GridPane.setConstraints(image2Path, 1, 0, 1, 1, HPos.CENTER, VPos.BOTTOM);
+		GridPane.setConstraints(image2DirButton, 5, 0);
 
-		GridPane.setConstraints(image2View, 1, 1, 1, 1, HPos.CENTER, VPos.TOP);
-
-		resultLabel.setFont(new Font(18));
-		image2Label.setStyle("-fx-background-color: #FFFFFF");
-		GridPane.setConstraints(image2Label, 1, 2, 1, 1, HPos.CENTER, VPos.TOP, Priority.ALWAYS, Priority.ALWAYS);
+		image2View.setImage(new Image(APP_DEFAULT_IMAGE, APP_IMAGE_SIZE, APP_IMAGE_SIZE, true, true, false));
+		GridPane.setConstraints(image2View, 3, 1, 3, 1, HPos.CENTER, VPos.TOP, Priority.NEVER, Priority.ALWAYS);
 		
+		GridPane.setConstraints(image2Label, 3, 2, 3, 1);
+
 		verifyButton.setText(APP_VERIFY_BUTTON);
+		verifyButton.setPrefSize(APP_VERIFY_BUTTON_WIDTH, APP_VERIFY_BUTTON_HEIGHT);
 		verifyButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent event) {
 				if (image1File == null || image2File == null) {
@@ -134,22 +172,35 @@ public class Main extends Application {
 				verifyImages();
 			}
 		});
-		GridPane.setConstraints(verifyButton, 0, 3, 2, 1, HPos.CENTER, VPos.CENTER);
-
+		GridPane.setConstraints(verifyButton, 0, 3, 6, 1, HPos.CENTER, VPos.TOP);
+		
+		outputTextArea.setFont(new Font("Monospaced", 12));
+		GridPane.setConstraints(outputTextArea, 0, 4, 6, 1, HPos.CENTER, VPos.TOP);
+		
 		resultLabel.setFont(new Font(24));
 		resultLabel.setStyle("-fx-background-color: #FFFFFF");
-		GridPane.setConstraints(resultLabel, 0, 4, 2, 1, HPos.CENTER, VPos.CENTER);
+		GridPane.setConstraints(resultLabel, 0, 5, 6, 1);
 		
 		// display window
-		ColumnConstraints col1 = new ColumnConstraints(),
-				col2 = new ColumnConstraints();
-		col1.setPercentWidth(50);
-		col2.setPercentWidth(50);
-		layout.getColumnConstraints().addAll(col1, col2);
-		layout.getChildren().addAll(image1Path, image1View, image1Label, image2Path, image2View, image2Label, verifyButton, resultLabel);
+		layout.getChildren().addAll(
+				image1CameraButton,
+				image1Path,
+				image1DirButton,
+				image1View,
+				image1Label,
+				image2CameraButton,
+				image2Path,
+				image2DirButton,
+				image2View,
+				image2Label,
+				verifyButton,
+				outputTextArea,
+				resultLabel);
 		stage.setScene(scene);
 		//stage.sizeToScene();
 		stage.show();
+		System.out.println("image1CamBut VAlign: " + GridPane.getValignment(image1CameraButton));
+		System.out.println("image1CamBut h/w: " + image1CameraButton.getWidth() + "/" + image1CameraButton.getHeight());
 	}
 
 	public File getImageFile() {
@@ -165,9 +216,16 @@ public class Main extends Application {
 		Image image = new Image(file.toURI().toString(), APP_IMAGE_SIZE, APP_IMAGE_SIZE, true, true, true);
 		iv.setImage(image);
 	}
+	
+	private static final Format dateFormat = new SimpleDateFormat("HH:mm.ss");
+	private static final Date date = new Date();
+	public void logToOutput(String line) {
+		outputTextArea.appendText("[" + dateFormat.format(date) + "] " + line + "\n");
+	}
 
 	public void verifyImages() {
 		// http session
+		logToOutput("Using images " + image1File.getName() + " and " + image2File.getName());
 		HttpClient client = HttpClients.createDefault();
 		JsonParser parser = new JsonParser();
 		try {
@@ -175,18 +233,23 @@ public class Main extends Application {
 			URIBuilder baseUrl = new URIBuilder(API_URL + "detect");
 			baseUrl.setParameter("returnFaceId", "true");
 			URI url = baseUrl.build();
+			logToOutput("Using Face API - Detect: " + url.toURL());
 
 			// image1
+			logToOutput("Encoding image 1 ...");
 			byte[] bytes = Files.readAllBytes(Paths.get(image1File.getAbsolutePath()));
 			ByteArrayEntity requestBody = new ByteArrayEntity(bytes, ContentType.APPLICATION_OCTET_STREAM);
+			logToOutput("... finished.");
 			// POST request
 			HttpPost request = new HttpPost(url);
 			request.setHeader("Ocp-Apim-Subscription-Key", API_KEY);
 			request.setHeader("Content-Type", "application/octet-stream");
 			request.setEntity(requestBody);
 			// response
+			logToOutput("Sending image 1 ...");
 			HttpResponse response = client.execute(request);
 			String responseJson = EntityUtils.toString(response.getEntity());
+			logToOutput("... response:");
 			// faceid
 			String image1FaceId;
 			JsonObject result = parser.parse(responseJson).getAsJsonArray().get(0).getAsJsonObject();
