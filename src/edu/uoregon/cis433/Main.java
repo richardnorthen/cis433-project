@@ -35,7 +35,7 @@ public class Main extends Application {
 	private static final double APP_MIN_W = 1000;
 	private static final double APP_IMG_SIZE = 400;
 
-	private static final String APP_DEF_IMG_URI = "file:face.jpg";
+	private static final String APP_DEF_IMG_URI = "/res/face.jpg";
 	private static final String APP_DEF_IMG_TEXT = "Select a face...";
 
 	private static final String APP_BTN_VERIFY = "Verify";
@@ -123,7 +123,7 @@ public class Main extends Application {
 		});
 		GridPane.setConstraints(image1DirBtn, 2, 0);
 
-		image1View.setImage(new Image(APP_DEF_IMG_URI, APP_IMG_SIZE, APP_IMG_SIZE, true, true, false));
+		image1View.setImage(new Image(getClass().getResource(APP_DEF_IMG_URI).toURI().toString(), APP_IMG_SIZE, APP_IMG_SIZE, true, true, false));
 		GridPane.setConstraints(image1View, 0, 1, 3, 1, HPos.LEFT, VPos.TOP, Priority.ALWAYS, Priority.NEVER);
 		
 		// image 2 object properties
@@ -148,7 +148,7 @@ public class Main extends Application {
 		});
 		GridPane.setConstraints(image2DirBtn, 5, 0);
 
-		image2View.setImage(new Image(APP_DEF_IMG_URI, APP_IMG_SIZE, APP_IMG_SIZE, true, true, false));
+		image2View.setImage(new Image(getClass().getResource(APP_DEF_IMG_URI).toURI().toString(), APP_IMG_SIZE, APP_IMG_SIZE, true, true, false));
 		GridPane.setConstraints(image2View, 3, 1, 3, 1, HPos.RIGHT, VPos.TOP, Priority.ALWAYS, Priority.NEVER);
 
 		// verify button and output area properties
