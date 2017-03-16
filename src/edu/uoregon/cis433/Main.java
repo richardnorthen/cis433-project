@@ -61,7 +61,7 @@ public class Main extends Application {
 	TextArea outputTextArea;
 
 	/**
-	 * Starts the program and launches the application.
+	 * Starts the program and launches the application
 	 * @param args unused
 	 */
 	public static void main(String[] args) {
@@ -69,7 +69,7 @@ public class Main extends Application {
 	}
 
 	/**
-	 * Overrides start o build, set, and display the application.
+	 * Overrides start to build, set, and display the application
 	 * @param stage
 	 * @throws Exception
 	 */
