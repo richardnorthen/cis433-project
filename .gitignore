@@ -8,6 +8,10 @@
 *.tar.gz
 *.rar
 
+# Eclipse Files #
+.classpath
+.project
+
 hs_err_pid*
 
 
